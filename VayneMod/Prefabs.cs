@@ -1,4 +1,6 @@
-﻿using RoR2;
+﻿using System;
+using EntityStates;
+using RoR2;
 using UnityEngine;
 
 namespace VayneMod
@@ -8,6 +10,7 @@ namespace VayneMod
         internal static void Init()
         {
             ForEachBody();
+            InitializeSkills();
         }
         private static void ForEachBody()
         {
@@ -21,6 +24,27 @@ namespace VayneMod
                 if (footstep != null)
                     footstep.footstepDustPrefab = Resources.Load<GameObject>("prefabs/GenericFootstepDust");
             }
+        }
+
+        private static void InitializeSkills()
+        {
+            foreach (var skillDef in  (Assets.maincontentpack.skillDefs))
+            {
+                skillDef.activationState = new SerializableEntityStateType(FindType(skillDef.skillName));
+                
+            }
+        }
+
+        private static Type[] _types;
+        private static Type FindType(string camelCaseName)
+        {
+            if (_types == null) _types = typeof(VaynePlugin).Assembly.GetTypes();
+            foreach (var type in _types)
+            {
+                if (type.Name.StartsWith(camelCaseName)) return type;
+            }
+            Debug.LogWarning("EntityState class not found for " + camelCaseName);
+            return null;
         }
     }
 }

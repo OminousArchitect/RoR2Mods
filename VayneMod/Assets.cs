@@ -3,7 +3,7 @@ using System.Reflection;
 using RoR2;
 using RoR2.ContentManagement;
 using UnityEngine;
-using  Path = System.IO.Path;
+using Path = System.IO.Path;
 using System.Linq;
 using EntityStates;
 using R2API;
@@ -66,8 +66,8 @@ namespace VayneMod
             ContentPackProvider.contentPack = maincontentpack;
             Prefabs.Init();
         }
-        
-        
+
+
 
         private static void AddEntityStates()
         {
