@@ -85,7 +85,8 @@ namespace VayneMod
 
             internal static void Initialize()
             {
-                contentPack = serializedContentPack.CreateContentPack();
+                contentPack = Assets.maincontentpack;
+                //contentPack = serializedContentPack.CreateContentPack();
                 ContentManager.collectContentPackProviders += AddCustomContent;
             }
 
