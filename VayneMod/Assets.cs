@@ -67,8 +67,6 @@ namespace VayneMod
             Prefabs.Init();
         }
 
-
-
         private static void AddEntityStates()
         {
             maincontentpack.entityStateTypes.Add(Assembly.GetExecutingAssembly().GetTypes().Where

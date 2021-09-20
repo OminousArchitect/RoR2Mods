@@ -23,6 +23,7 @@ namespace VayneMod
         private void Awake()
         {
             Assets.Initialize();
+            Projectiles.Initialize();
         }
     }
     
