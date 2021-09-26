@@ -5,8 +5,9 @@ using UnityEngine;
 
 namespace VayneMod
 {
-    public static class Prefabs
+    internal static class Prefabs
     {
+        internal static GameObject vayneprefab;
         internal static void Init()
         {
             ForEachBody();
@@ -24,6 +25,8 @@ namespace VayneMod
                 if (footstep != null)
                     footstep.footstepDustPrefab = Resources.Load<GameObject>("prefabs/GenericFootstepDust");
             }
+            vayneprefab = Assets.maincontentpack.bodyPrefabs[0];
+            //TODO vayneprefab.AddComponent<TauntSound>();
         }
 
         private static void InitializeSkills()

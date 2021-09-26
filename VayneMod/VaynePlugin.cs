@@ -1,6 +1,15 @@
 ﻿using System;
+using System.Security;
+using System.Security.Permissions;
 using BepInEx;
 using R2API.Utils;
+using RoR2;
+using HarmonyLib;
+
+#pragma warning disable CS0618 // Type or member is obsolete
+[assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
+#pragma warning restore CS0618 // Type or member is obsolete
+[module: UnverifiableCode]
 
 namespace VayneMod
 {
@@ -24,6 +33,9 @@ namespace VayneMod
         {
             Assets.Initialize();
             Projectiles.Initialize();
+
+            var harmony = new Harmony("nines.vaynemod");
+            harmony.PatchAll();
         }
     }
     

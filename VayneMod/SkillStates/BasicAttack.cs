@@ -10,6 +10,7 @@ namespace VayneMod.SkillStates
     {
         public int step;
         private ProjectileDamage _projectileDamage;
+        private Animator animator;
         public override void OnEnter()
         {
             baseDuration = 0.75f;
@@ -22,8 +23,11 @@ namespace VayneMod.SkillStates
             switch (step)
             {
                 case 0:
+                    Debug.Log("Normal 1");
+                    _projectileDamage.damageType = DamageType.Generic;
+                    break;
                 case 1:
-                    Debug.Log("Normal");
+                    Debug.Log("Normal 2");
                     _projectileDamage.damageType = DamageType.Generic;
                     break;
                 case 2:
@@ -31,8 +35,29 @@ namespace VayneMod.SkillStates
                     _projectileDamage.damageType = DamageType.BypassArmor;
                     break;
             }
-            
+            animator = base.GetModelAnimator();
+            this.animator.SetBool("attacking", true);
             base.OnEnter();
+        }
+
+        public override void OnExit()
+        {
+            animator.SetBool("attacking", false);
+            base.OnExit();
+        }
+
+        public override void PlayAnimation(float duration)
+        {
+            var body = Prefabs.vayneprefab.GetComponent<CharacterBody>();
+            if (body.HasBuff(Projectiles.FinalHourBuff))
+            {
+                PlayAnimation("Gesture, Override", "UltAttack", "Slash.playbackRate", base.duration);
+            }
+            else
+            {
+                base.PlayCrossfade("Gesture, Override", "Fire" + (1 + step), "Slash.playbackRate", base.duration, 0.15f);
+            }
+            base.PlayAnimation(duration);
         }
 
         public void SetStep(int i)

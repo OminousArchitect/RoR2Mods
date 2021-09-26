@@ -45,7 +45,7 @@ namespace VayneMod.SkillStates
             Vector3 b = base.characterMotor ? base.characterMotor.velocity : Vector3.zero;
             this.previousPosition = base.transform.position - b;
 
-            base.PlayAnimation("Gesture, Override", "ShootGun", "ShootGun.playbackRate", Tumble.duration);
+            base.PlayAnimation("FullBody, Override", "Tumble", "ShootGun.playbackRate", Tumble.duration);
 
             if (NetworkServer.active)
             {
