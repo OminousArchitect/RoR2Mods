@@ -18,11 +18,13 @@ namespace VayneMod.SkillStates
         private Animator animator;
         private Vector3 previousPosition;
 
+        private CharacterBody _body;
+
         public override void OnEnter()
         {
             base.OnEnter();
+            _body = Prefabs.vayneprefab.GetComponent<CharacterBody>();
             this.animator = base.GetModelAnimator();
-
             if (base.isAuthority && base.inputBank && base.characterDirection)
             {
                 this.forwardDirection = ((base.inputBank.moveVector == Vector3.zero) ? base.characterDirection.forward : base.inputBank.moveVector).normalized;

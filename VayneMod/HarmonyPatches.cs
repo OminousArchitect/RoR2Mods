@@ -15,7 +15,7 @@ namespace VayneMod
         [HarmonyPrefix, HarmonyPatch(typeof(CharacterBody), "OnBuffFirstStackGained")]
         public static void VayneUltimate(CharacterBody __instance, BuffDef buffDef)
         {
-            if (__instance.HasBuff(FHbuff))
+            if (__instance.HasBuff(Projectiles.FinalHour))
             {
                 Debug.Log("HookStack");
                 animator.SetBool("isFinalHour", true);
@@ -25,15 +25,13 @@ namespace VayneMod
         [HarmonyPrefix, HarmonyPatch(typeof(CharacterBody), "OnBuffFinalStackLost")]
         public static void VayneUltimateEnd(CharacterBody __instance, BuffDef buffDef)
         {
-            if (__instance.HasBuff(FHbuff))
+            if (__instance.HasBuff(Projectiles.FinalHour))
             {
                 Debug.Log("HookLost");
                 animator.SetBool("isFinalHour", false);
             }
             
         }
-
-        private static BuffDef FHbuff = Assets.serialcontentpack.buffDefs[0];
         private static Animator animator = Prefabs.vayneprefab.GetComponent<ModelLocator>()._modelTransform.GetComponent<Animator>();
 
     }

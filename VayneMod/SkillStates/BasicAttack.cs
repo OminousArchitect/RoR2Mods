@@ -49,7 +49,7 @@ namespace VayneMod.SkillStates
         public override void PlayAnimation(float duration)
         {
             var body = Prefabs.vayneprefab.GetComponent<CharacterBody>();
-            if (body.HasBuff(Projectiles.FinalHourBuff))
+            if (body.HasBuff(Projectiles.FinalHour))
             {
                 PlayAnimation("Gesture, Override", "UltAttack", "Slash.playbackRate", base.duration);
             }

@@ -10,7 +10,7 @@ namespace VayneMod.SkillStates
         {
             var FHbuff = Assets.serialcontentpack.buffDefs[0];
             var vaynebody = Prefabs.vayneprefab.GetComponent<CharacterBody>();
-            vaynebody.AddTimedBuff(Projectiles.FinalHourBuff, 8f);
+            vaynebody.AddTimedBuff(Projectiles.FinalHour, 8f);
             base.OnEnter();
         }
 
