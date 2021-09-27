@@ -13,7 +13,7 @@ namespace VayneMod
     internal static class Assets
     {
         internal static AssetBundle mainAssetBundle;
-        internal static SerializableContentPack serialcontentpack;
+        private static SerializableContentPack serialcontentpack;
         internal static ContentPack maincontentpack;
         internal static string SoundBankName = "";  
         
@@ -64,7 +64,7 @@ namespace VayneMod
             maincontentpack = serialcontentpack.CreateContentPack();
             AddEntityStates();
             ContentPackProvider.contentPack = maincontentpack;
-            Prefabs.Init();
+            Prefabs.Initialize();
         }
 
         private static void AddEntityStates()
@@ -84,7 +84,7 @@ namespace VayneMod
             internal static void Initialize()
             {
                 contentPack = Assets.maincontentpack;
-                //contentPack = serializedContentPack.CreateContentPack();
+                //contentPack = serializedContentPack.CreateContentPack(); //TODO ???
                 ContentManager.collectContentPackProviders += AddCustomContent;
             }
 

@@ -8,15 +8,8 @@ namespace VayneMod.SkillStates
     {
         public override void OnEnter()
         {
-            var FHbuff = Assets.serialcontentpack.buffDefs[0];
-            var vaynebody = Prefabs.vayneprefab.GetComponent<CharacterBody>();
-            vaynebody.AddTimedBuff(Projectiles.FinalHour, 8f);
+            base.characterBody.AddTimedBuff(Buffs.FinalHour, 5f);
             base.OnEnter();
-        }
-
-        public override void OnExit()
-        {
-            base.OnExit();
         }
     }
 }

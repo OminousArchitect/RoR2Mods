@@ -8,7 +8,7 @@ namespace VayneMod
     internal static class Prefabs
     {
         internal static GameObject vayneprefab;
-        internal static void Init()
+        internal static void Initialize()
         {
             ForEachBody();
             InitializeSkills();
@@ -24,6 +24,9 @@ namespace VayneMod
                 var footstep = body.GetComponentInChildren<FootstepHandler>();
                 if (footstep != null)
                     footstep.footstepDustPrefab = Resources.Load<GameObject>("prefabs/GenericFootstepDust");
+
+                //var deathBehavior = body.GetComponent<CharacterDeathBehavior>();
+                //deathBehavior.deathState = new SerializableEntityStateType(typeof(VayneMod.DeathState));
             }
             vayneprefab = Assets.maincontentpack.bodyPrefabs[0];
             //TODO vayneprefab.AddComponent<TauntSound>();
@@ -34,7 +37,6 @@ namespace VayneMod
             foreach (var skillDef in  (Assets.maincontentpack.skillDefs))
             {
                 skillDef.activationState = new SerializableEntityStateType(FindType(skillDef.skillName));
-                
             }
         }
 

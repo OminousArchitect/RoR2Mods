@@ -17,19 +17,17 @@ namespace VayneMod.SkillStates
         private Vector3 forwardDirection;
         private Animator animator;
         private Vector3 previousPosition;
-
-        private CharacterBody _body;
-
+        private CharacterBody body;
+        
+        //This is Henry's roll btw I have barely touched this yet
         public override void OnEnter()
         {
             base.OnEnter();
-            _body = Prefabs.vayneprefab.GetComponent<CharacterBody>();
             this.animator = base.GetModelAnimator();
             if (base.isAuthority && base.inputBank && base.characterDirection)
             {
                 this.forwardDirection = ((base.inputBank.moveVector == Vector3.zero) ? base.characterDirection.forward : base.inputBank.moveVector).normalized;
             }
-
             Vector3 rhs = base.characterDirection ? base.characterDirection.forward : this.forwardDirection;
             Vector3 rhs2 = Vector3.Cross(Vector3.up, rhs);
 
@@ -51,8 +49,12 @@ namespace VayneMod.SkillStates
 
             if (NetworkServer.active)
             {
-                //base.characterBody.AddTimedBuff(Modules.Buffs.armorBuff, 3f * Roll.duration);
                 base.characterBody.AddTimedBuff(RoR2Content.Buffs.HiddenInvincibility, 0.5f * Tumble.duration);
+                base.characterBody.AddTimedBuff(Buffs.Tumble, 2f);
+                if (base.characterBody.HasBuff(Buffs.FinalHour))
+                {
+                    base.characterBody.AddTimedBuff(RoR2Content.Buffs.Cloak, 1f);
+                }
             }
         }
 
@@ -92,7 +94,6 @@ namespace VayneMod.SkillStates
         {
             if (base.cameraTargetParams) base.cameraTargetParams.fovOverride = -1f;
             base.OnExit();
-
             base.characterMotor.disableAirControlUntilCollision = false;
         }
 

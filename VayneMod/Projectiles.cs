@@ -10,7 +10,6 @@ namespace VayneMod
     {
         public static GameObject boltprefab;
         public static GameObject silverboltprefab;
-        public static BuffDef FinalHour;
         internal static void Initialize()
         {
             ModifyProjectiles();
@@ -19,7 +18,6 @@ namespace VayneMod
         private static void ModifyProjectiles()
         {
             boltprefab = Assets.mainAssetBundle.LoadAsset<GameObject>("Boltprefab");
-            FinalHour = Assets.serialcontentpack.buffDefs[0];
         }
         
     }

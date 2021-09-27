@@ -15,6 +15,8 @@ namespace VayneMod
             Reg(Prefix + "VAYNE_SPECIAL_NAME", "Final Hour");
             Reg(Prefix + "VAYNE_PRIMARY_DESC", "I'm not describing this rn");
             Reg(Prefix + "VAYNE_SECONDARY_NAME", "Condemn");
+            //Reg(Prefix + "VAYNE_SENTINEL_SKIN", "Sentinel"); //TODO
+            Reg(Prefix + "VAYNE_BASE_SKIN", "Project");
         }
 
         internal static void Reg(string key , string val)

@@ -5,6 +5,7 @@ using BepInEx;
 using R2API.Utils;
 using RoR2;
 using HarmonyLib;
+using R2API;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -33,9 +34,32 @@ namespace VayneMod
         {
             Assets.Initialize();
             Projectiles.Initialize();
+            Buffs.Initialize();
 
+            GlobalEventManager.onCharacterDeathGlobal += GlobalEventManagerOnonCharacterDeathGlobal;
+            
             var harmony = new Harmony("nines.vaynemod");
             harmony.PatchAll();
+
+            //Hook();
+        }
+
+        private void Hook()
+        {
+            RecalculateStatsAPI.GetStatCoefficients += (sender, args) =>
+            {
+                //args.baseMoveSpeedAdd += sender.HasBuff(Buffs.FinalHour)
+            };
+        }
+
+        private void GlobalEventManagerOnonCharacterDeathGlobal(DamageReport damageReport)
+        {
+            BodyIndex VayneIndex = Prefabs.vayneprefab.GetComponent<CharacterBody>().bodyIndex;
+            if (damageReport.victimIsElite && damageReport.attackerBodyIndex == VayneIndex && damageReport.attackerBody.HasBuff(Buffs.FinalHour))
+            {
+                damageReport.attackerBody.AddTimedBuff(RoR2Content.Buffs.AffixLunar, 3f);
+                damageReport.attackerBody.AddTimedBuff(Buffs.FinalHour, 5f);
+            }
         }
     }
     
