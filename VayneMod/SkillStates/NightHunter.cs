@@ -10,9 +10,9 @@ namespace VayneMod
     {
         private CharacterBody body;
         private float stopwatch;
-        private float radius = 25f;
-        private float searchrate = 10f;
-        private int speedincrease = 10;
+        private float radius = 5f;
+        private float searchrate = 5f;
+        private int speedincrease = 2;
         
         public void Awake()
         {
@@ -28,7 +28,6 @@ namespace VayneMod
                 maxDistanceFilter = radius,
                 searchOrigin = body.transform.position,
                 sortMode = BullseyeSearch.SortMode.Distance,
-                
                 filterByLoS = false
                 
             };
@@ -41,7 +40,7 @@ namespace VayneMod
             {
                 RecalculateStatsAPI.GetStatCoefficients += (sender, args) =>
                 {
-                    args.baseMoveSpeedAdd += sender.GetComponent<NightHunter>().speedincrease;
+                    args.baseMoveSpeedAdd += sender.GetComponent<NightHunter>()?.speedincrease ?? 0f;
                 };
             }
         }
