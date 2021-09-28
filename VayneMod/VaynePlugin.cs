@@ -22,6 +22,7 @@ namespace VayneMod
         "LanguageAPI",
         "DamageAPI",
         "SoundAPI",
+        "RecalculateStatsAPI",
     })]
     
     public class VaynePlugin : BaseUnityPlugin

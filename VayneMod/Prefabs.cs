@@ -29,6 +29,8 @@ namespace VayneMod
                 //deathBehavior.deathState = new SerializableEntityStateType(typeof(VayneMod.DeathState));
             }
             vayneprefab = Assets.maincontentpack.bodyPrefabs[0];
+            vayneprefab.AddComponent<NightHunter>();
+            
             //TODO vayneprefab.AddComponent<TauntSound>();
         }
 
