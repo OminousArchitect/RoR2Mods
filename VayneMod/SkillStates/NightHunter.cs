@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using R2API;
 using RoR2;
@@ -8,54 +9,83 @@ namespace VayneMod
 {
     public class NightHunter : MonoBehaviour
     {
-        private CharacterBody body;
-        private float stopwatch;
-        private float radius = 5f;
-        private float searchrate = 5f;
-        private int speedincrease = 2;
-
-        private BullseyeSearch search;
-        private float oldDistance;
-        private int changeInDirection;
+        // Filled via editor 
+        public CharacterBody body;
+        public CharacterMotor characterMotor;
+        public float speedincrease = 2f;
+        public float radius = 5f;
+        public float searchrate = 5f;
+        
+        private float _stopwatch;
+        private BullseyeSearch _search;
+        private float _oldDistance;
+        
+        public Direction changeInDirection;
 
         public void Awake()
         {
-            body = GetComponent<CharacterBody>();
             RecalculateStatsAPI.GetStatCoefficients += (sender, args) =>
             {
-                args.baseMoveSpeedAdd += sender.GetComponent<NightHunter>()?.speedincrease ?? 0f;
-            };
+                var component = sender.GetComponent<NightHunter>();
+                if (component)
+                    if(component.changeInDirection == Direction.Closer)
+                        args.baseMoveSpeedAdd += component.speedincrease;
+            }; // TODO move this to plugin Awake
             
-            search = new BullseyeSearch
+            _search = new BullseyeSearch
             {
-                
                 teamMaskFilter = TeamMask.GetEnemyTeams(TeamIndex.Monster),
                 maxDistanceFilter = radius,
-                searchOrigin = body.transform.position,
                 sortMode = BullseyeSearch.SortMode.Distance,
-                filterByLoS = false
-                
+                filterByLoS = false,
+                maxAngleFilter = 30f
             };
-            search.FilterOutGameObject(Prefabs.vayneprefab);
-            search.RefreshCandidates();
+        }
+
+        private HurtBox DoSearch()
+        {
+            _search.searchOrigin = transform.position;
+            _search.searchDirection = characterMotor.velocity.normalized;
+            _search.RefreshCandidates();
+            _search.FilterOutGameObject(gameObject); // This needs to come after candidates are refreshed
+            
+            /* instead of using you could do this
+            var test = DoSearch();
+            var test2 = test.Current;
+            test.Dispose();
+            */
+            using (var results = _search.GetResults().GetEnumerator()) // You have to dispose of enumerables when you're done with them using automatically does this.
+            {
+                return results.Current;
+            }
         }
 
         public void FixedUpdate()
         {
-            stopwatch += Time.fixedDeltaTime;
-            if (stopwatch >= 1f / searchrate)
+            _stopwatch += Time.fixedDeltaTime;
+            if (_stopwatch >= 1f / searchrate)
             {
-                search.RefreshCandidates();
-                using (var results = search.GetResults().GetEnumerator())
+                var hurtBox = DoSearch();
+                if (hurtBox)
                 {
-                    if (results.Current != null)
-                    {
-                        var currentDist = Vector3.Distance(body.corePosition, results.Current.transform.position);
-                        changeInDirection = Mathf.RoundToInt(Mathf.Clamp(oldDistance - currentDist, -1, 1)); // Might need to swap the substraction around here
-                        oldDistance = currentDist;
-                    }
+                    var currentDist = Vector3.Distance(transform.position, hurtBox.healthComponent.transform.position);
+                    var deltaDist = _oldDistance - currentDist; // Might need to swap the substraction around here
+                    if (deltaDist > 0.001f) // Most likely condition first
+                        changeInDirection = Direction.Closer; // moving towards
+                    else if (deltaDist < -0.001f)
+                        changeInDirection = Direction.Further; // moving away
+                    else
+                        changeInDirection = Direction.None; // no change
+                    _oldDistance = currentDist;
                 }
             }
+        }
+
+        public enum Direction
+        {
+            None,
+            Closer,
+            Further
         }
     }
 }
