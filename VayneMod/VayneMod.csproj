@@ -14,6 +14,9 @@
       <Reference Include="BepInEx, Version=5.3.0.0, Culture=neutral, PublicKeyToken=null">
         <HintPath>..\libs\BepInEx.dll</HintPath>
       </Reference>
+      <Reference Include="MonoMod.RuntimeDetour, Version=20.8.3.5, Culture=neutral, PublicKeyToken=null">
+        <HintPath>..\libs\MonoMod.RuntimeDetour.dll</HintPath>
+      </Reference>
       <Reference Include="R2API, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null">
         <HintPath>..\libs\R2API.dll</HintPath>
       </Reference>

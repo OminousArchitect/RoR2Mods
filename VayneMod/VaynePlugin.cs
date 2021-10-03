@@ -36,21 +36,14 @@ namespace VayneMod
             Assets.Initialize();
             Projectiles.Initialize();
             Buffs.Initialize();
+            
+            ThunderkitMadeArtifact.InitializeArtifact();
 
             GlobalEventManager.onCharacterDeathGlobal += GlobalEventManagerOnonCharacterDeathGlobal;
-            
+
             var harmony = new Harmony("nines.vaynemod");
             harmony.PatchAll();
-
-            //Hook();
-        }
-
-        private void Hook()
-        {
-            RecalculateStatsAPI.GetStatCoefficients += (sender, args) =>
-            {
-                //args.baseMoveSpeedAdd += sender.HasBuff(Buffs.FinalHour)
-            };
+            
         }
 
         private void GlobalEventManagerOnonCharacterDeathGlobal(DamageReport damageReport)

@@ -56,7 +56,7 @@ namespace VayneMod.SkillStates
         {
             if (base.characterBody.HasBuff(Buffs.FinalHour))
             {
-                PlayAnimation("Gesture, Override", "UltAttack", "Slash.playbackRate", base.duration);
+                PlayAnimation("UltimateAttack", "UltAttack", "Slash.playbackRate", base.duration);
             }
             else if (base.characterBody.HasBuff(Buffs.Tumble))
             { 

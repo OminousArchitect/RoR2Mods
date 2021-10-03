@@ -37,7 +37,7 @@ namespace VayneMod
             }
         }
 
-        public static Animator RetrieveAnimator(CharacterBody body)
+        public static Animator RetrieveAnimator(CharacterBody body) //instanced body
         {
             Animator animator = body.GetComponent<ModelLocator>().modelTransform.GetComponent<Animator>();
             return animator;
