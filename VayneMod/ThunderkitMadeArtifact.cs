@@ -12,16 +12,18 @@ namespace VayneMod
     public class ThunderkitMadeArtifact
     {
         public static ArtifactDef NoFlying = Assets.ContentPackProvider.contentPack.artifactDefs.Find("NoFlyingDef");
-        public static List<int> FlyingEnemies;
-        public static List<int> cachedlist
-        {
+        public static List<BodyIndex> FlyingEnemies;
+        public static List<string> banned = new List<string> {"BellBody"}; //"GreaterWispBody", "RoboBallBossBody", "VultureBody", "VagrantBody"};
+        public static List<BodyIndex> cachedlist
+        { 
             get
             {
                 if(FlyingEnemies == null)
                 {
-                    FlyingEnemies = new List<int>();
-                    FlyingEnemies.Add( (int) BodyCatalog.FindBodyIndex("BellBody") );
+                    FlyingEnemies = new List<BodyIndex>();
+                    banned.ForEach(x => FlyingEnemies.Add(BodyCatalog.FindBodyIndex(x)));
                 }
+                Debug.LogWarning("This is printing AAAAAAAAAAA");
                 return FlyingEnemies;
             }
         }
@@ -31,18 +33,19 @@ namespace VayneMod
         }
         public static void NotHooks()
         {
-            Run.onRunStartGlobal += ArtifactBehaviour;
+            //Run.onRunStartGlobal += ArtifactBehaviour;
             SceneDirector.onGenerateInteractableCardSelection += (director, selection) =>
             {
-                selection.RemoveCardsThatFailFilter(c => cachedlist.Contains( (int) (c.spawnCard.prefab.GetComponent<CharacterBody>().bodyIndex) ) );
+                if (NetworkServer.active && RunArtifactManager.instance.IsArtifactEnabled(NoFlying))
+                {
+                    selection.RemoveCardsThatFailFilter(c =>
+                    {
+                        var component = c.spawnCard.prefab.GetComponent<CharacterBody>();
+                        if (component == null) return true;
+                        return !cachedlist.Contains(component.bodyIndex);
+                    });
+                }
             };
-        }
-        private static void ArtifactBehaviour(Run run)
-        {
-            if(NetworkServer.active && RunArtifactManager.instance.IsArtifactEnabled(NoFlying))
-            {
-                Chat.AddMessage("All my homies hate flying enemies");
-            }
         }
     }
 }
