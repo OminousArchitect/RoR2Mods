@@ -10,6 +10,7 @@ namespace VayneMod.SkillStates
         {
             base.characterBody.AddTimedBuff(Buffs.FinalHour, 5f);
             base.OnEnter();
+            //TODO Final Hour changes the M1 skill slot to an alternate version of BasicAttack
         }
     }
 }

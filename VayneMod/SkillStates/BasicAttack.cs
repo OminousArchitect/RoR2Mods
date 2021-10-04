@@ -12,16 +12,18 @@ namespace VayneMod.SkillStates
         private ProjectileDamage _projectileDamage;
         private Animator animator;
         private bool tumbled;
+        private bool isFH;
         private float tumbleMult;
         private float totalCoeff;
         public override void OnEnter()
         {
-            tumbled = base.characterBody.HasBuff(Buffs.Tumble);
+            animator = GetModelAnimator();
+            tumbled = characterBody.HasBuff(Buffs.Tumble);
+            isFH = characterBody.HasBuff(Buffs.FinalHour);
             baseDuration = 0.75f;
             baseDelayBeforeFiringProjectile = 0.2f;
-            projectilePrefab = Assets.maincontentpack.projectilePrefabs[0]; // Boltprefab
             force = 75f;
-            targetMuzzle = "Muzzle";
+            projectilePrefab = Assets.maincontentpack.projectilePrefabs[0];
             _projectileDamage = projectilePrefab.GetComponent<ProjectileDamage>();
             switch (step)
             {
@@ -41,7 +43,6 @@ namespace VayneMod.SkillStates
             {
                 damageCoefficient = 1.5f;
             }
-            animator = base.GetModelAnimator();
             animator.SetBool("attacking", true);
             base.OnEnter();
         }

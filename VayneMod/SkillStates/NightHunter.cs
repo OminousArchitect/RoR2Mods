@@ -10,52 +10,47 @@ namespace VayneMod
     public class NightHunter : MonoBehaviour
     {
         // Filled via editor 
-        public CharacterBody body;
-        public CharacterMotor characterMotor;
         public float speedincrease = 2f;
-        public float radius = 5f;
+        public float radius = 30f;
         public float searchrate = 5f;
-        
         private float _stopwatch;
-        private BullseyeSearch _search;
         private float _oldDistance;
+        public CharacterBody _body;
+        private BullseyeSearch _search;
+        public CharacterMotor _motor;
         
-        public Direction changeInDirection;
+        public Distance changeInDirection;
 
         public void Awake()
         {
-            RecalculateStatsAPI.GetStatCoefficients += (sender, args) =>
-            {
-                var component = sender.GetComponent<NightHunter>();
-                if (component)
-                    if(component.changeInDirection == Direction.Closer)
-                        args.baseMoveSpeedAdd += component.speedincrease;
-            }; // TODO move this to plugin Awake
-            
             _search = new BullseyeSearch
             {
                 teamMaskFilter = TeamMask.GetEnemyTeams(TeamIndex.Monster),
                 maxDistanceFilter = radius,
                 sortMode = BullseyeSearch.SortMode.Distance,
                 filterByLoS = false,
-                maxAngleFilter = 30f
+                maxAngleFilter = 45f
             };
+
+            _body = GetComponent<CharacterBody>();
+            _motor = GetComponent<CharacterMotor>();
         }
 
         private HurtBox DoSearch()
         {
             _search.searchOrigin = transform.position;
-            _search.searchDirection = characterMotor.velocity.normalized;
+            _search.searchDirection = _motor.velocity.normalized;
             _search.RefreshCandidates();
-            _search.FilterOutGameObject(gameObject); // This needs to come after candidates are refreshed
+            _search.FilterOutGameObject(Prefabs.vayneprefab); // This needs to come after candidates are refreshed
             
             /* instead of using you could do this
-            var test = DoSearch();
-            var test2 = test.Current;
-            test.Dispose();
+            var doSearch = DoSearch();
+            var results = doSearch.Current;
+            doSearch.Dispose();
             */
             using (var results = _search.GetResults().GetEnumerator()) // You have to dispose of enumerables when you're done with them using automatically does this.
             {
+                //Debug.LogWarning($"{results.Current}");
                 return results.Current;
             }
         }
@@ -69,19 +64,22 @@ namespace VayneMod
                 if (hurtBox)
                 {
                     var currentDist = Vector3.Distance(transform.position, hurtBox.healthComponent.transform.position);
-                    var deltaDist = _oldDistance - currentDist; // Might need to swap the substraction around here
+                    var deltaDist = currentDist - _oldDistance; // Might need to swap the substraction around here
                     if (deltaDist > 0.001f) // Most likely condition first
-                        changeInDirection = Direction.Closer; // moving towards
+                        changeInDirection = Distance.Closer; // moving towards
                     else if (deltaDist < -0.001f)
-                        changeInDirection = Direction.Further; // moving away
+                        changeInDirection = Distance.Further; // moving away
                     else
-                        changeInDirection = Direction.None; // no change
+                        changeInDirection = Distance.None; // no change
                     _oldDistance = currentDist;
                 }
             }
+            
+            var currentmovespeed = _body.moveSpeed;
+            Debug.Log($"{_search.GetResults().GetEnumerator().Current}" );
         }
 
-        public enum Direction
+        public enum Distance
         {
             None,
             Closer,

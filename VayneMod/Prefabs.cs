@@ -15,13 +15,13 @@ namespace VayneMod
         }
         private static void ForEachBody()
         {
-            foreach (var body in Assets.maincontentpack.bodyPrefabs)
+            foreach (var prefab in Assets.maincontentpack.bodyPrefabs)
             {
-                var cb = body.GetComponent<CharacterBody>();
-                cb.crosshairPrefab = Resources.Load<GameObject>("Prefabs/Crosshair/Bandit2CrosshairPrepRevolverFire");
-                cb.preferredPodPrefab = Resources.Load<GameObject>("prefabs/networkedobjects/SurvivorPod");
+                var characterBody = prefab.GetComponent<CharacterBody>();
+                characterBody.crosshairPrefab = Resources.Load<GameObject>("Prefabs/Crosshair/Bandit2CrosshairPrepRevolverFire");
+                characterBody.preferredPodPrefab = Resources.Load<GameObject>("prefabs/networkedobjects/SurvivorPod");
 
-                var footstep = body.GetComponentInChildren<FootstepHandler>();
+                var footstep = prefab.GetComponentInChildren<FootstepHandler>();
                 if (footstep != null)
                     footstep.footstepDustPrefab = Resources.Load<GameObject>("prefabs/GenericFootstepDust");
 
@@ -29,8 +29,8 @@ namespace VayneMod
                 //deathBehavior.deathState = new SerializableEntityStateType(typeof(VayneMod.DeathState));
             }
             vayneprefab = Assets.maincontentpack.bodyPrefabs[0];
-
-            //TODO vayneprefab.AddComponent<TauntSound>();
+            
+            //TODO vayneprefab.AddComponent<LobbyTaunt>();
         }
 
         private static void InitializeSkills()

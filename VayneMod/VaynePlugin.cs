@@ -34,7 +34,6 @@ namespace VayneMod
         private void Awake()
         {
             Assets.Initialize();
-            Projectiles.Initialize();
             Buffs.Initialize();
             
             ThunderkitMadeArtifact.InitializeArtifact();
@@ -43,13 +42,21 @@ namespace VayneMod
 
             var harmony = new Harmony("nines.vaynemod");
             harmony.PatchAll();
-            
+            RecalculateStatsAPI.GetStatCoefficients += (sender, args) => 
+            {
+                var nightHunter = sender.GetComponent<NightHunter>();
+                if (nightHunter)
+                    if (nightHunter.changeInDirection == NightHunter.Distance.Closer)
+                    {
+                        args.baseMoveSpeedAdd += nightHunter.speedincrease;
+                    }
+            };
         }
 
         private void GlobalEventManagerOnonCharacterDeathGlobal(DamageReport damageReport)
         {
-            BodyIndex VayneIndex = Prefabs.vayneprefab.GetComponent<CharacterBody>().bodyIndex;
-            if (damageReport.victimIsElite && damageReport.attackerBodyIndex == VayneIndex && damageReport.attackerBody.HasBuff(Buffs.FinalHour))
+            BodyIndex vayneIndex = Prefabs.vayneprefab.GetComponent<CharacterBody>().bodyIndex;
+            if (damageReport.victimIsElite && damageReport.attackerBodyIndex == vayneIndex && damageReport.attackerBody.HasBuff(Buffs.FinalHour))
             {
                 damageReport.attackerBody.AddTimedBuff(RoR2Content.Buffs.AffixLunar, 3f);
                 damageReport.attackerBody.AddTimedBuff(Buffs.FinalHour, 5f);
