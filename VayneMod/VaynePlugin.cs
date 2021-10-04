@@ -1,5 +1,4 @@
-﻿using System;
-using System.Security;
+﻿using System.Security;
 using System.Security.Permissions;
 using BepInEx;
 using R2API.Utils;
@@ -42,14 +41,13 @@ namespace VayneMod
 
             var harmony = new Harmony("nines.vaynemod");
             harmony.PatchAll();
-            RecalculateStatsAPI.GetStatCoefficients += (sender, args) => 
+            
+            RecalculateStatsAPI.GetStatCoefficients += (sender, args) =>
             {
-                var nightHunter = sender.GetComponent<NightHunter>();
-                if (nightHunter)
-                    if (nightHunter.changeInDirection == NightHunter.Distance.Closer)
-                    {
-                        args.baseMoveSpeedAdd += nightHunter.speedincrease;
-                    }
+                var component = sender.GetComponent<NightHunter>();
+                if (component)
+                    if(component.changeInDirection == NightHunter.Direction.Closer)
+                        args.baseMoveSpeedAdd += component.speedincrease;
             };
         }
 
