@@ -1,60 +1,51 @@
 ﻿using RoR2;
-using R2API;
-using UnityEngine;
-using MonoMod.RuntimeDetour;
-using System.Reflection;
-using System;
 using System.Collections.Generic;
+using HarmonyLib;
 using UnityEngine.Networking;
+using UnityEngine;
 
 namespace VayneMod
 {
+    [HarmonyPatch]
     public class ThunderkitMadeArtifact
     {
         public static ArtifactDef NoFlying = Assets.ContentPackProvider.contentPack.artifactDefs.Find("NoFlyingDef");
-        
-        public static List<BodyIndex> FlyingEnemies;
 
-        public static string[] banned =
+        public static readonly List<string> banned = new List<string>
         {
-            "WispBody", 
-            "VagrantBody"
+            "WispMaster", 
+            "VagrantMaster",
+            "BellMaster",
+            //"RoboBallBossMaster",
+            "GreaterWispMaster",
+            //"LunarWispMaster"
         };
-        public static List<BodyIndex> cachedlist
-        { 
-            get
-            {
-                if(FlyingEnemies == null)
-                {
-                    FlyingEnemies = new List<BodyIndex>();
-                    Array.ForEach(banned,x => FlyingEnemies.Add(BodyCatalog.FindBodyIndex(x)) );
-                    Debug.LogWarning("Creating blacklist...");
-                }
-                return FlyingEnemies;
-            }
-        }
         public static void InitializeArtifact()
         {
-            NotHooks();
+            Debug.Log("Initializing NoFlying");
         }
-        public static void NotHooks()
+
+        public static bool FilterCards(DirectorCard c)
         {
-            //Run.onRunStartGlobal += ArtifactBehaviour;
-            SceneDirector.onGenerateInteractableCardSelection += (director, selection) =>
+            Debug.Log(c.spawnCard.prefab.name);
+            var what = !banned.Contains(c.spawnCard.prefab.name);
+            Debug.Log(what);
+            return what;
+        }
+
+        [HarmonyPostfix, HarmonyPatch(typeof(ClassicStageInfo), nameof(ClassicStageInfo.RebuildCards))]
+        public static void RemoveCards(ClassicStageInfo __instance)
+        {
+            if (NetworkServer.active && RunArtifactManager.instance.IsArtifactEnabled(NoFlying))
             {
-                if (NetworkServer.active && RunArtifactManager.instance.IsArtifactEnabled(NoFlying))
+                var cards = __instance.monsterSelection;
+                for (var i = 0; i < cards.Count; i++)
                 {
-                    selection.RemoveCardsThatFailFilter(c =>
-                    {
-                        var component = c.spawnCard.prefab.GetComponent<CharacterBody>();
-                        if (component == null)
-                        {
-                            return true;
-                        }
-                        return cachedlist.Contains(component.bodyIndex);
-                    });
+                    var card = cards.GetChoice(i);
+                    if (!FilterCards(card.value))
+                        cards.RemoveChoice(i);
                 }
-            };
+            }
         }
     }
 }
