@@ -33,7 +33,7 @@ namespace VayneMod
             
             if (buffDef == Buffs.Tumble)
             {
-                RetrieveAnimator(__instance).SetBool("hasTumbled", false);
+                //RetrieveAnimator(__instance).SetBool("hasTumbled", false);
             }
         }
 

@@ -5,6 +5,7 @@ using R2API.Utils;
 using RoR2;
 using HarmonyLib;
 using R2API;
+using UnityEngine;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -37,7 +38,8 @@ namespace VayneMod
             
             ThunderkitMadeArtifact.InitializeArtifact();
 
-            GlobalEventManager.onCharacterDeathGlobal += GlobalEventManagerOnonCharacterDeathGlobal;
+            GlobalEventManager.onCharacterDeathGlobal += GlobalEventManager_onCharacterDeathGlobal;
+            GlobalEventManager.onCharacterLevelUp += GlobalEventManager_onCharacterLevelUp;
 
             var harmony = new Harmony("nines.vaynemod");
             harmony.PatchAll();
@@ -48,19 +50,30 @@ namespace VayneMod
                 if (component)
                     if(component.changeInDirection == NightHunter.Direction.Closer)
                         args.baseMoveSpeedAdd += component.speedincrease;
+
+                if (sender.HasBuff(Buffs.FinalHour))
+                {
+                    args.baseAttackSpeedAdd += 0.30f;
+                }
             };
         }
 
-        private void GlobalEventManagerOnonCharacterDeathGlobal(DamageReport damageReport)
+        private void GlobalEventManager_onCharacterLevelUp(CharacterBody obj)
+        {
+            BodyIndex vayneIndex = Prefabs.vayneprefab.GetComponent<CharacterBody>().bodyIndex;
+            if (obj.bodyIndex == vayneIndex)
+            {
+                Debug.Log("Leveled up");
+            }
+        }
+
+        private void GlobalEventManager_onCharacterDeathGlobal(DamageReport damageReport)
         {
             BodyIndex vayneIndex = Prefabs.vayneprefab.GetComponent<CharacterBody>().bodyIndex;
             if (damageReport.victimIsElite && damageReport.attackerBodyIndex == vayneIndex && damageReport.attackerBody.HasBuff(Buffs.FinalHour))
             {
-                damageReport.attackerBody.AddTimedBuff(RoR2Content.Buffs.AffixLunar, 3f);
                 damageReport.attackerBody.AddTimedBuff(Buffs.FinalHour, 5f);
             }
         }
     }
-    
-    
 }

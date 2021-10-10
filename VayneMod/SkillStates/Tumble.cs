@@ -7,8 +7,8 @@ namespace VayneMod.SkillStates
 {
     public class Tumble : BaseSkillState
     {
-        public static float duration = 0.5f;
-        public static float initialSpeedCoefficient = 5f;
+        public static float duration = 0.4f;
+        public static float initialSpeedCoefficient = 7f;
         public static float finalSpeedCoefficient = 2.5f;
 
         public static float dodgeFOV = EntityStates.Commando.DodgeState.dodgeFOV;
@@ -18,8 +18,6 @@ namespace VayneMod.SkillStates
         private Animator animator;
         private Vector3 previousPosition;
         private CharacterBody body;
-        
-        //This is Henry's roll btw I have barely touched this yet
         public override void OnEnter()
         {
             base.OnEnter();
@@ -46,16 +44,7 @@ namespace VayneMod.SkillStates
             this.previousPosition = base.transform.position - b;
 
             base.PlayAnimation("FullBody, Override", "Tumble", "ShootGun.playbackRate", Tumble.duration);
-
-            if (NetworkServer.active)
-            {
-                base.characterBody.AddTimedBuff(RoR2Content.Buffs.HiddenInvincibility, 0.5f * Tumble.duration);
-                base.characterBody.AddTimedBuff(Buffs.Tumble, 2f);
-                if (base.characterBody.HasBuff(Buffs.FinalHour))
-                {
-                    base.characterBody.AddTimedBuff(RoR2Content.Buffs.Cloak, 1f);
-                }
-            }
+            base.characterBody.AddTimedBuff(RoR2Content.Buffs.HiddenInvincibility, 0.75f);
         }
 
         private void RecalculateRollSpeed()
@@ -92,6 +81,14 @@ namespace VayneMod.SkillStates
 
         public override void OnExit()
         {
+            if (NetworkServer.active)
+            {
+                base.characterBody.AddTimedBuff(Buffs.Tumble, 2f);
+                if (base.characterBody.HasBuff(Buffs.FinalHour))
+                {
+                    base.characterBody.AddTimedBuff(RoR2Content.Buffs.Cloak, 1f);
+                }
+            }
             if (base.cameraTargetParams) base.cameraTargetParams.fovOverride = -1f;
             base.OnExit();
             base.characterMotor.disableAirControlUntilCollision = false;

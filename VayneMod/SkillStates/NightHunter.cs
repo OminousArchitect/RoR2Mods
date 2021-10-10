@@ -12,9 +12,8 @@ namespace VayneMod
         // Filled via editor 
         public CharacterBody body;
         public CharacterMotor characterMotor;
-        public float speedincrease = 5f;
-        public float radius = 80f;
-        public float searchrate = 15f;
+        public float speedincrease = 8f;
+        public float searchrate = 10f;
         
         private float _stopwatch;
         private BullseyeSearch _search;
@@ -30,10 +29,10 @@ namespace VayneMod
             _search = new BullseyeSearch
             {
                 teamMaskFilter = TeamMask.GetUnprotectedTeams(body.teamComponent.teamIndex),
-                maxDistanceFilter = radius,
                 sortMode = BullseyeSearch.SortMode.Distance,
                 filterByLoS = false,
-                maxAngleFilter = 30f
+                maxDistanceFilter = 40f,
+                maxAngleFilter = 65f,
             };
         }
 
@@ -44,7 +43,7 @@ namespace VayneMod
             _search.RefreshCandidates();
             _search.FilterOutGameObject(gameObject); // This needs to come after candidates are refreshed
             
-            Debug.Log("doing search");
+            //Debug.Log("doing search");
             /* instead of using you could do this
             var test = DoSearch();
             var test2 = test.Current;
