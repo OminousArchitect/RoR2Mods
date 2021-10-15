@@ -6,49 +6,66 @@ using UnityEngine;
 
 namespace VayneMod.SkillStates
 {
-    public class BasicAttack : GenericProjectileBaseState, SteppedSkillDef.IStepSetter
+    public class BasicAttack : AimThrowableBase, SteppedSkillDef.IStepSetter
     {
         public int step;
         private ProjectileDamage _projectileDamage;
         private Animator animator;
         private bool tumbled;
         private bool isFH;
-        private float tumbleMult;
-        private float totalCoeff;
+        private float tumbleAdd;
+        private float baseAD;
+        private float magnitude;
+        private HuntressTracker _tracker;
         private GameObject bolt;
+
         public override void OnEnter()
         {
+            if (isFH)
+            {
+                baseAD = 2.6f;
+                tumbleAdd = 0.4f;
+            }
+            else
+            {
+                baseAD = 2.4f;
+                tumbleAdd = 0.2f;
+            }
+
             animator = GetModelAnimator();
             tumbled = characterBody.HasBuff(Buffs.Tumble);
             isFH = characterBody.HasBuff(Buffs.FinalHour);
-            bolt = Assets.maincontentpack.projectilePrefabs[0];
-            var ghost = bolt.GetComponent<ProjectileController>().ghostPrefab;
-            
-            baseDuration = 0.75f;
-            baseDelayBeforeFiringProjectile = 0.18f;
-            force = 3000f;
-            projectilePrefab = bolt;
+            projectilePrefab = Assets.maincontentpack.projectilePrefabs[0];
+            _tracker = GetComponent<HuntressTracker>();
             _projectileDamage = projectilePrefab.GetComponent<ProjectileDamage>();
+            projectileBaseSpeed = 20f;
+            baseMinimumDuration = 0.75f;
+            minimumDuration = 0.18f;
+
+            if (tumbled)
+            {
+                damageCoefficient = baseAD + tumbleAdd;
+            }
+            else
+            {
+                damageCoefficient = baseAD;
+            }
+
             switch (step)
             {
                 case 0:
                 case 1:
                     _projectileDamage.damageType = DamageType.Generic;
-                    projectilePrefab.GetComponent<ProjectileController>().ghostPrefab.GetComponentInChildren<MeshRenderer>().material.color = Color.cyan;
+                    //projectilePrefab.GetComponent<ProjectileController>().ghostPrefab.GetComponentInChildren<MeshRenderer>().material.color = Color.cyan; //todo returns null for some reason
                     break;
                 case 2:
                     _projectileDamage.damageType = DamageType.BypassArmor;
-                    projectilePrefab.GetComponent<ProjectileController>().ghostPrefab.GetComponentInChildren<MeshRenderer>().material.color = Color.green;
+                    //projectilePrefab.GetComponent<ProjectileController>().ghostPrefab.GetComponentInChildren<MeshRenderer>().material.color = Color.green; 
                     break;
+                //Todo Silver bolt is purple, final hour bolts are ???
             }
-            if (tumbled)
-            {
-                damageCoefficient = 1.75f;
-            }
-            else
-            {
-                damageCoefficient = 1.5f;
-            }
+
+            //Debug.LogWarning($"{damageCoefficient}");
             animator.SetBool("attacking", true);
             base.OnEnter();
         }
@@ -57,28 +74,65 @@ namespace VayneMod.SkillStates
         {
             animator.SetBool("attacking", false);
             animator.SetBool("hasTumbled", false);
+            characterBody.RemoveBuff(Buffs.Tumble);
             base.OnExit();
         }
 
-        public override void PlayAnimation(float duration)
+        public override void FireProjectile()
+        {
+            HandleAnimations(minimumDuration);
+            base.FireProjectile();
+        }
+
+        public void HandleAnimations(float minimumDuration)
         {
             if (characterBody.HasBuff(Buffs.FinalHour) && characterBody.HasBuff(Buffs.Tumble))
             {
-                PlayAnimation("UltimateAttack", "TumbleUltAttack", "Slash.playbackRate", base.duration);
+                PlayAnimation("UltimateAttack", "TumbleUltAttack", "Slash.playbackRate", base.minimumDuration);
             }
+
             if (base.characterBody.HasBuff(Buffs.FinalHour))
             {
-                PlayAnimation("UltimateAttack", "UltAttack", "Slash.playbackRate", base.duration);
+                PlayAnimation("UltimateAttack", "UltAttack", "Slash.playbackRate", base.minimumDuration);
             }
             else if (base.characterBody.HasBuff(Buffs.Tumble))
-            { 
-                PlayAnimation("Gesture, Override", "TumbleAttack", "Slash.playbackRate", base.duration);
+            {
+                PlayAnimation("Gesture, Override", "TumbleAttack", "Slash.playbackRate", base.minimumDuration);
+                AkSoundEngine.PostEvent(517366917, gameObject);
             }
             else
             {
-                PlayCrossfade("Gesture, Override", "Fire" + (1 + step), "Slash.playbackRate", base.duration, 0.15f);
+                PlayCrossfade("Gesture, Override", "Fire" + (1 + step), "Slash.playbackRate", base.minimumDuration, 0.15f);
+                AkSoundEngine.PostEvent(275010454, gameObject);
             }
-            base.PlayAnimation(duration);
+        }
+
+        public override void Update()
+        {
+            age += Time.deltaTime;
+
+            if (CameraRigController.IsObjectSpectatedByAnyCamera(base.gameObject))
+            {
+                UpdateTrajectoryInfo(out currentTrajectoryInfo);
+            }
+        }
+
+        public override void FixedUpdate()
+        {
+            fixedAge += Time.fixedDeltaTime;
+
+            if (base.isAuthority && base.fixedAge >= minimumDuration)
+            {
+                UpdateTrajectoryInfo(out currentTrajectoryInfo);
+                EntityState entityState = PickNextState();
+                if (entityState != null)
+                {
+                    outer.SetNextState(entityState);
+                    return;
+                }
+
+                outer.SetNextStateToMain();
+            }
         }
 
         public void SetStep(int i)

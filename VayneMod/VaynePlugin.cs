@@ -74,6 +74,11 @@ namespace VayneMod
             {
                 damageReport.attackerBody.AddTimedBuff(Buffs.FinalHour, 5f);
             }
+            
+            if (!damageReport.victimIsElite && damageReport.attackerBodyIndex == vayneIndex && damageReport.attackerBody.HasBuff(Buffs.FinalHour))
+            {
+                damageReport.attackerBody.AddTimedBuff(Buffs.FinalHour, 1f);
+            }
         }
-    }
+    } 
 }

@@ -12,8 +12,8 @@ namespace VayneMod
         // Filled via editor 
         public CharacterBody body;
         public CharacterMotor characterMotor;
-        public float speedincrease = 8f;
-        public float searchrate = 10f;
+        public float speedincrease;
+        public float searchrate = 8f;
         
         private float _stopwatch;
         private BullseyeSearch _search;
@@ -58,6 +58,14 @@ namespace VayneMod
 
         public void FixedUpdate()
         {
+            if (body.HasBuff(Buffs.FinalHour))
+            {
+                speedincrease = 4f;
+            }
+            else
+            {
+                speedincrease = 3f;
+            }
             _stopwatch += Time.fixedDeltaTime;
             //Debug.Log(_stopwatch + "/" + 1f / searchrate);
             if (_stopwatch >= 1f / searchrate)
@@ -75,7 +83,7 @@ namespace VayneMod
                         changeInDirection = Direction.Further; // moving away
                     else
                         changeInDirection = Direction.None; // no change
-                    Debug.Log(changeInDirection);
+                    Debug.Log($"{speedincrease}");
                     _oldDistance = currentDist;
                 }
                 else
@@ -84,6 +92,7 @@ namespace VayneMod
                 }
                 body.RecalculateStats();
             }
+            
         }
 
         public enum Direction

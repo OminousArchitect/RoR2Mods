@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.IO;
 using System.Reflection;
 using RoR2;
 using RoR2.ContentManagement;
@@ -7,6 +8,7 @@ using Path = System.IO.Path;
 using System.Linq;
 using EntityStates;
 using R2API;
+using VayneMod;
 
 namespace VayneMod
 {
@@ -15,7 +17,7 @@ namespace VayneMod
         internal static AssetBundle mainAssetBundle;
         private static SerializableContentPack serialcontentpack;
         internal static ContentPack maincontentpack;
-        internal static string SoundBankName = "";  
+        internal static string SoundBankName = "VayneSounds";  
         
         internal static void Initialize()
         {
@@ -40,14 +42,14 @@ namespace VayneMod
                 Debug.LogFormat("VayneMod: SoundBank name is blank. Skipping loading SoundBank.");
                 return;
             }
-
-            using (var manifestResourceStream2 = Assembly.GetExecutingAssembly()
-                .GetManifestResourceStream("nines.VayneMod" + "." + SoundBankName + ".bnk"))
-            {
-                var array = new byte[manifestResourceStream2.Length];
-                manifestResourceStream2.Read(array, 0, array.Length);
-                SoundAPI.SoundBanks.Add(array);
-            }
+            
+            var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            Stream stream = File.Open(Path.Combine(path, SoundBankName + ".bnk"), FileMode.Open);
+            var array = new byte[stream.Length];
+            stream.Read(array, 0, array.Length);
+            Debug.Log("length of sndbnk: " + array.Length);
+            
+            R2API.SoundAPI.SoundBanks.Add(array);
         }
 
         private static void LoadAssetBundle()

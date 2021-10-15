@@ -15,6 +15,7 @@ namespace VayneMod
             if (buffDef == Buffs.FinalHour)
             {
                 RetrieveAnimator(__instance).SetBool("inFinalHour", true);
+                //RetrieveSkills(__instance).utility._cooldownScale = 0.5f;
             }
 
             if (buffDef == Buffs.Tumble)
@@ -29,6 +30,7 @@ namespace VayneMod
             if (buffDef == Buffs.FinalHour)
             {
                 RetrieveAnimator(__instance).SetBool("inFinalHour", false);
+                
             }
             
             if (buffDef == Buffs.Tumble)
@@ -41,6 +43,12 @@ namespace VayneMod
         {
             Animator animator = body.GetComponent<ModelLocator>().modelTransform.GetComponent<Animator>();
             return animator;
+        }
+
+        public static SkillLocator RetrieveSkills(CharacterBody body)
+        {
+            SkillLocator skills = body.GetComponent<SkillLocator>();
+            return skills;
         }
     }
 }

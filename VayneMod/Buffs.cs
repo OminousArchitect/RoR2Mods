@@ -13,6 +13,7 @@ namespace VayneMod
             FinalHour = Assets.maincontentpack.buffDefs[0];
             Tumble = Assets.maincontentpack.buffDefs[1];
             FinalHour.buffColor = Color.white;
+            Tumble.buffColor = Color.white;
         }
     }
 }

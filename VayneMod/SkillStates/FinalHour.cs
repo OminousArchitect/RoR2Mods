@@ -8,9 +8,9 @@ namespace VayneMod.SkillStates
     {
         public override void OnEnter()
         {
-            base.characterBody.AddTimedBuff(Buffs.FinalHour, 5f);
+            base.characterBody.AddTimedBuff(Buffs.FinalHour, 15f);
+            AkSoundEngine.PostEvent(133898581, gameObject);
             base.OnEnter();
-            //TODO Final Hour changes the M1 skill slot to an alternate version of BasicAttack
         }
     }
 }

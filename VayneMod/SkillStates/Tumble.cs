@@ -43,6 +43,7 @@ namespace VayneMod.SkillStates
             Vector3 b = base.characterMotor ? base.characterMotor.velocity : Vector3.zero;
             this.previousPosition = base.transform.position - b;
 
+            AkSoundEngine.PostEvent(613867928, gameObject);
             base.PlayAnimation("FullBody, Override", "Tumble", "ShootGun.playbackRate", Tumble.duration);
             base.characterBody.AddTimedBuff(RoR2Content.Buffs.HiddenInvincibility, 0.75f);
         }

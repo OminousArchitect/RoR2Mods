@@ -35,6 +35,9 @@
       <Reference Include="UnityEngine.Networking, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
         <HintPath>..\libs\UnityEngine.Networking.dll</HintPath>
       </Reference>
+      <Reference Include="Wwise, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+        <HintPath>..\libs\Wwise.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
 </Project>
